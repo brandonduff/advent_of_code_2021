@@ -69,9 +69,7 @@ class DayTwoTest < Minitest::Test
   end
 
   def test_part_one
-    input = File.read("day_two_input.txt")
-
-    assert_equal 2019945, DayTwo.part_one(input)
+    assert_equal 2019945, DayTwo.part_one(file_input)
   end
 
   def test_simple_part_two
@@ -79,8 +77,10 @@ class DayTwoTest < Minitest::Test
   end
 
   def test_part_two
-    input = File.read("day_two_input.txt")
+    assert_equal 1599311480, DayTwo.part_two(file_input)
+  end
 
-    assert_equal 1599311480, DayTwo.part_two(input)
+  def file_input
+    File.read("day_two_input.txt")
   end
 end
