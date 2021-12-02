@@ -9,44 +9,37 @@ class DayTwo
     new(input).part_two
   end
 
-  attr_reader :input
+  attr_reader :input, :horizontal_position, :depth, :aim
 
   def initialize(input)
+    @horizontal_position = 0
+    @depth = 0
+    @aim = 0
     @input = input
   end
 
   def part_one
-    horizontal_position = 0
-    depth = 0
-    lines.each do |instruction, magnitude|
-      case instruction
-      when 'forward'
-        horizontal_position += magnitude
-      when 'down'
-        depth += magnitude
-      when 'up'
-        depth -= magnitude
-      end
-    end
-    horizontal_position * depth
+    run
+    horizontal_position * aim
   end
 
   def part_two
-    horizontal_position = 0
-    aim = 0
-    depth = 0
+    run
+    horizontal_position * depth
+  end
+
+  def run
     lines.each do |instruction, magnitude|
       case instruction
       when 'forward'
-        horizontal_position += magnitude
-        depth += aim * magnitude
+        @horizontal_position += magnitude
+        @depth += aim * magnitude
       when 'down'
-        aim += magnitude
+        @aim += magnitude
       when 'up'
-        aim -= magnitude
+        @aim -= magnitude
       end
     end
-    horizontal_position * depth
   end
 
   def lines
