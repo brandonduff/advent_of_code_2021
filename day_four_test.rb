@@ -30,7 +30,6 @@ class DayThree
       rows.transpose
     end
 
-
     def get_diagonal(rows)
       rows.map.with_index do |row, i|
         row[i]
