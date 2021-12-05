@@ -143,7 +143,7 @@ class DayFiveTest < Minitest::Test
   end
 
   def test_part_one
-    input = File.read("day_five_input.txt")
+    input = File.read("../day_five_input.txt")
     lines = input.split("\n").map { |string| Line.from_string(string) }
     lines = lines.reject(&:diagonal?)
     overlaps = Overlaps.new
@@ -199,7 +199,7 @@ class DayFiveTest < Minitest::Test
   end
 
   def test_part_two
-    input = File.read("day_five_input.txt")
+    input = File.read("../day_five_input.txt")
     lines = input.split("\n").map { |string| Line.from_string(string) }
     overlaps = Overlaps.new
     lines.each { |line| overlaps.traverse(line) }
