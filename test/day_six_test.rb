@@ -25,11 +25,9 @@ class FishCounts
   end
 
   def tick
-    last_value = 0
     birthed = @counts[0]
     1.upto(8).each do |i|
-      @counts[last_value] = @counts[i]
-      last_value += 1
+      @counts[i - 1] = @counts[i]
     end
     @counts[8] = birthed
     @counts[6] += birthed
