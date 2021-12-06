@@ -112,7 +112,7 @@ class DaySixTest < Minitest::Test
     256.times do
       fish_counts.tick
     end
-    assert_equal(0, fish_counts.total)
+    assert_equal(1613415325809, fish_counts.total)
   end
 
   def initial_fish
