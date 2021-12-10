@@ -1,8 +1,6 @@
 require 'minitest/autorun'
 
 Location = Struct.new(:row, :col, :value, :height_map) do
-  attr_accessor :seen
-
   def >(other)
     value > other.value
   end
@@ -13,10 +11,6 @@ Location = Struct.new(:row, :col, :value, :height_map) do
 
   def adjacents
     height_map.adjacents(row, col)
-  end
-
-  def seen?
-    @seen ||= false
   end
 end
 
@@ -30,12 +24,7 @@ class HeightMap
   end
 
   def top_three_basin_lengths
-    basins = []
-    lowpoints.each do |lowpoint|
-      basins << basin_at(lowpoint)
-      clear_seen
-    end
-    basins.map(&:length).max(3)
+    lowpoints.map { |lowpoint| basin_at(lowpoint) }.map(&:length).max(3)
   end
 
   def lowpoints
@@ -59,22 +48,23 @@ class HeightMap
     result
   end
 
-  def basin_at(location, result = [])
-    return result if location.seen? || location.value == 9
-    location.seen = true
-    result << location
-    location.adjacents.reject(&:seen?).each do |adjacent|
-      basin_at(adjacent, result)
+  def basin_at(location)
+    to_visit = [location]
+    visited = []
+
+    until to_visit.empty?
+      next_location = to_visit.pop
+      visited << next_location unless visited.include?(next_location)
+      next_location.adjacents.each do |adjacent|
+        to_visit << adjacent unless visited.include?(adjacent) || adjacent.value == 9
+      end
     end
-    result
+
+    visited
   end
 
   def locations
     rows.flatten
-  end
-
-  def clear_seen
-    locations.each { |location| location.seen = false }
   end
 end
 
@@ -106,8 +96,6 @@ class DayNineTest < Minitest::Test
   def test_filling_basin
     input = "98765432"
     height_map = HeightMap.new(input)
-    assert_equal([2,3,4,5,6,7,8], height_map.basin_at(height_map.at(0, 7)).map(&:value))
-    height_map.clear_seen
     assert_equal([2,3,4,5,6,7,8], height_map.basin_at(height_map.at(0, 7)).map(&:value))
   end
 
