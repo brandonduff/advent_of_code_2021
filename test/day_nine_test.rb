@@ -1,12 +1,8 @@
 require 'minitest/autorun'
 
 Location = Struct.new(:row, :col, :value, :height_map) do
-  def >(other)
-    value > other.value
-  end
-
   def lowpoint?
-    adjacents.all? { |adjacent| adjacent > self }
+    adjacents.all? { |adjacent| adjacent.value > value }
   end
 
   def adjacents
@@ -31,14 +27,6 @@ class HeightMap
     locations.select(&:lowpoint?)
   end
 
-  def at(row, col)
-    rows[row][col]
-  end
-
-  def rows
-    @rows ||= @input.map.with_index { |row, i| row.map.with_index { |value, j| Location.new(i, j, value.to_i, self) } }
-  end
-
   def adjacents(row, col)
     result = []
     result << at(row, col - 1) if col > 0
@@ -46,6 +34,10 @@ class HeightMap
     result << at(row - 1, col) if row > 0
     result << at(row + 1, col) if row < rows.length - 1
     result
+  end
+
+  def at(row, col)
+    rows[row][col]
   end
 
   def basin_at(location)
@@ -65,6 +57,10 @@ class HeightMap
 
   def locations
     rows.flatten
+  end
+
+  def rows
+    @rows ||= @input.map.with_index { |row, i| row.map.with_index { |value, j| Location.new(i, j, value.to_i, self) } }
   end
 end
 
