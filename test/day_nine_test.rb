@@ -60,13 +60,12 @@ class HeightMap
   end
 
   def basin_at(row, col, result = [])
-    result = []
     location = at(row, col)
     return result if location.seen? || location.value == 9
     location.seen = true
     result << location
     location.adjacents.reject(&:seen?).each do |location|
-      result.concat(basin_at(location.row, location.col))
+      basin_at(location.row, location.col, result)
     end
     result
   end
