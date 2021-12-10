@@ -24,7 +24,7 @@ class HeightMap
   end
 
   def top_three_basin_lengths
-    lowpoints.map { |lowpoint| basin_at(lowpoint) }.map(&:length).max(3)
+    lowpoints.map(&method(:basin_at)).map(&:length).max(3)
   end
 
   def lowpoints
