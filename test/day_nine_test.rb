@@ -32,7 +32,7 @@ class HeightMap
   def top_three_basin_lengths
     basins = []
     lowpoints.each do |lowpoint|
-      basins << basin_at(lowpoint.row, lowpoint.col)
+      basins << basin_at(lowpoint)
       clear_seen
     end
     basins.map(&:length).max(3)
@@ -59,13 +59,12 @@ class HeightMap
     result
   end
 
-  def basin_at(row, col, result = [])
-    location = at(row, col)
+  def basin_at(location, result = [])
     return result if location.seen? || location.value == 9
     location.seen = true
     result << location
-    location.adjacents.reject(&:seen?).each do |location|
-      basin_at(location.row, location.col, result)
+    location.adjacents.reject(&:seen?).each do |adjacent|
+      basin_at(adjacent, result)
     end
     result
   end
@@ -107,9 +106,9 @@ class DayNineTest < Minitest::Test
   def test_filling_basin
     input = "98765432"
     height_map = HeightMap.new(input)
-    assert_equal([2,3,4,5,6,7,8], height_map.basin_at(0, 7).map(&:value))
+    assert_equal([2,3,4,5,6,7,8], height_map.basin_at(height_map.at(0, 7)).map(&:value))
     height_map.clear_seen
-    assert_equal([2,3,4,5,6,7,8], height_map.basin_at(0, 7).map(&:value))
+    assert_equal([2,3,4,5,6,7,8], height_map.basin_at(height_map.at(0, 7)).map(&:value))
   end
 
   def test_top_three_basin_lengths
