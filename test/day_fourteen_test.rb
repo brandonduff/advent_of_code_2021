@@ -1,0 +1,117 @@
+require 'minitest/autorun'
+
+class PolymerTemplate
+  attr_reader :pairs, :elements
+
+  def initialize(string)
+    @string = string
+    @rules = []
+    @pairs = Hash.new(0)
+    string.chars.each_cons(2).tally.each do |k, v|
+      @pairs[k] = v
+    end
+    @elements = Hash.new(0)
+    string.chars.each do |c|
+      @elements[c] += 1
+    end
+  end
+
+  def add_rule(rule)
+    @rules << rule
+  end
+
+  def step
+    result = Hash.new(0)
+    @pairs.each do |pair, tally|
+      if (rule = @rules.detect { |rule| rule.pair == pair })
+        result[[pair.first, rule.insertion_character]] += tally
+        result[[rule.insertion_character, pair.last]] += tally
+        @elements[rule.insertion_character] += tally
+        result[pair] -= tally
+      end
+    end
+    result.each do |pair, tally|
+      @pairs[pair] += tally
+    end
+  end
+
+  def to_s
+    pairs.reject { |p, v| v.zero? }.each_cons(2).map { |(p1, t1), (p2, t2)| p1.first + p2.last }.join
+  end
+end
+
+class PairInsertionRule
+  attr_reader :pair, :insertion_character
+
+  def initialize(pair, insertion_character)
+    @pair = pair.chars
+    @insertion_character = insertion_character
+  end
+end
+
+class DayFourteenTest < Minitest::Test
+  def test_simple_insertion
+    template = PolymerTemplate.new('AA')
+    rule = PairInsertionRule.new('AA', 'B')
+    template.add_rule(rule)
+    template.step
+    assert_equal(1, template.pairs.values.max - template.pairs.values.min)
+  end
+
+  def test_sample_input
+    skip
+    input = <<~INPUT
+      NNCB
+
+      CH -> B
+      HH -> N
+      CB -> H
+      NH -> C
+      HB -> C
+      HC -> B
+      HN -> C
+      NN -> C
+      BH -> H
+      NC -> B
+      NB -> B
+      BN -> B
+      BB -> N
+      BC -> B
+      CC -> N
+      CN -> C
+    INPUT
+
+    template, rules = input.split("\n\n")
+    template = PolymerTemplate.new(template)
+    rules = rules.split("\n").map do |rule|
+      pair, insertion_character = rule.split(' -> ')
+      PairInsertionRule.new(pair, insertion_character)
+    end
+    rules.each { |rule| template.add_rule(rule) }
+    template.step
+    p template.pairs
+    assert_equal('NCNBCHB', template.to_s)
+
+    template.step
+    assert_equal('NBCCNBBBCBHCB', template.to_s)
+  end
+
+  def test_part_one
+    input = File.read('day_fourteen_input.txt')
+    template, rules = input.split("\n\n")
+    template = PolymerTemplate.new(template)
+    rules = rules.split("\n").map do |rule|
+      pair, insertion_character = rule.split(' -> ')
+      PairInsertionRule.new(pair, insertion_character)
+    end
+
+    rules.each { |rule| template.add_rule(rule) }
+    10.times { template.step }
+    result = template.elements.values.reject(&:zero?)
+    assert_equal(2967, result.max - result.min)
+
+    30.times { template.step }
+    result = template.elements.values.reject(&:zero?)
+    assert_equal(3692219987038, result.max - result.min)
+  end
+end
