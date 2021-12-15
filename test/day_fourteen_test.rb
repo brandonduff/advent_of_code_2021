@@ -34,10 +34,6 @@ class PolymerTemplate
       @pairs[pair] += tally
     end
   end
-
-  def to_s
-    pairs.reject { |p, v| v.zero? }.each_cons(2).map { |(p1, t1), (p2, t2)| p1.first + p2.last }.join
-  end
 end
 
 class PairInsertionRule
@@ -56,44 +52,6 @@ class DayFourteenTest < Minitest::Test
     template.add_rule(rule)
     template.step
     assert_equal(1, template.pairs.values.max - template.pairs.values.min)
-  end
-
-  def test_sample_input
-    skip
-    input = <<~INPUT
-      NNCB
-
-      CH -> B
-      HH -> N
-      CB -> H
-      NH -> C
-      HB -> C
-      HC -> B
-      HN -> C
-      NN -> C
-      BH -> H
-      NC -> B
-      NB -> B
-      BN -> B
-      BB -> N
-      BC -> B
-      CC -> N
-      CN -> C
-    INPUT
-
-    template, rules = input.split("\n\n")
-    template = PolymerTemplate.new(template)
-    rules = rules.split("\n").map do |rule|
-      pair, insertion_character = rule.split(' -> ')
-      PairInsertionRule.new(pair, insertion_character)
-    end
-    rules.each { |rule| template.add_rule(rule) }
-    template.step
-    p template.pairs
-    assert_equal('NCNBCHB', template.to_s)
-
-    template.step
-    assert_equal('NBCCNBBBCBHCB', template.to_s)
   end
 
   def test_part_one
